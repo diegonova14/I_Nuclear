@@ -95,13 +95,84 @@ p_137Cs_beta = 36.66
 p_57Co_1 = 122.06065
 p_57Co_2 = 136.47350
 
-# Punto 6: Encontrar el último máximo de la variable y_values_22Na, encontrar el valor correspondiente a x_values_22Na y graficar una linea en ese sitio que tenga un texto con el valor de la variable p_22Na_1
+max_i_22Na = len(y_values_22Na[400:]) - y_values_22Na[400:][::-1].index(max(y_values_22Na[400:])) - 1 + 400
+max_x_22Na = x_values_22Na[max_i_22Na]
+# Para los índices 300-400
+max_i_60Co_1 = y_values_60Co[300:400].index(max(y_values_60Co[300:400])) + 300
+max_x_60Co_1 = x_values_60Co[max_i_60Co_1]
+# Para los índices 400 en adelante
+max_i_60Co_2 = y_values_60Co[400:].index(max(y_values_60Co[400:])) + 400
+max_x_60Co_2 = x_values_60Co[max_i_60Co_2]
 
-last_max_index = len(y_values_22Na) - y_values_22Na[::-1].index(max(y_values_22Na)) - 1
-last_max_x = x_values_22Na[last_max_index]
-plt.axvline(x=last_max_x, color='r')
-plt.text(last_max_x, max(y_values_22Na), str(p_22Na_1), rotation=90)
+max_i_137Cs_1 = y_values_137Cs[:100].index(max(y_values_137Cs[:100]))
+max_x_137Cs_1 = x_values_137Cs[max_i_137Cs_1]
+
+max_i_137Cs_2 = y_values_137Cs[200:300].index(max(y_values_137Cs[200:300])) + 200
+max_x_137Cs_2 = x_values_137Cs[max_i_137Cs_2]
+
+max_i_57Co_1 = y_values_57Co[:100].index(max(y_values_57Co[:100]))
+max_x_57Co_1 = x_values_57Co[max_i_57Co_1]
+
+plt.figure(figsize=(12, 8))
+
+plt.axvline(x=max_x_22Na, color='r')
+plt.axvline(x=max_x_60Co_1, color='r')
+plt.axvline(x=max_x_60Co_2, color='r')
+plt.axvline(x=max_x_137Cs_1, color='r')
+plt.axvline(x=max_x_137Cs_2, color='r')
+plt.axvline(x=max_x_57Co_1, color='r')
+
+plt.plot(x_values_22Na,y_values_22Na, label='22Na 600 s')
+plt.plot(x_values_60Co, y_values_60Co, label='60Co 600 s')
+plt.plot(x_values_137Cs, y_values_137Cs, label='137Cs 600 s')
+plt.plot(x_values_57Co, y_values_57Co, label='57Co 300 s')
+
+plt.text(max_x_22Na, max(y_values_22Na), "{:.1f} keV".format(p_22Na_1), rotation=90)
+plt.text(max_x_60Co_1, max(y_values_60Co[300:400]), "{:.1f} keV".format(p_60Co_1), rotation=90)
+plt.text(max_x_60Co_2, max(y_values_60Co[400:]), "{:.1f} keV".format(p_60Co_2), rotation=90)
+plt.text(max_x_137Cs_1, max(y_values_137Cs[:100]), "{:.1f} keV".format(p_137Cs_alfa), rotation=90)
+plt.text(max_x_137Cs_1, max(y_values_137Cs[200:300])-2000, "{:.1f} keV".format(p_137Cs_beta), rotation=90)
+plt.text(max_x_137Cs_2, max(y_values_137Cs[200:300]), "{:.1f} keV".format(p_137Cs_1), rotation=90)
+plt.text(max_x_57Co_1, max(y_values_57Co[:100]), "{:.1f} keV".format(p_57Co_1), rotation=90)
+plt.text(max_x_57Co_1, max(y_values_57Co[:100])+2500, "{:.1f} keV".format(p_57Co_2), rotation=90)
+
+plt.xlim(right=500,left=0)
+plt.ylim(top=14000)
+
+plt.title('Espectros de emisión con picos de energía asociados')
+
+plt.xlabel('Canal')
+plt.ylabel('Cuentas')
+plt.legend()
+plt.savefig('P5_picos_energia.png')
 plt.show()
 
+# Punto 6: Ajustes de gaussiana
+# ANALISIS
 
+# Punto 1: Ajuste de gaussianas
+# Punto 1.1: Ajuste de gaussiana para 22Na
+from scipy.optimize import curve_fit
+
+def gaussiana(x, a, x0, sigma):
+    return a*np.exp(-(x-x0)**2/(2*sigma**2))
+
+x_values_22Na = np.array(x_values_22Na)
+y_values_22Na = np.array(y_values_22Na)
+
+popt_22Na, pcov_22Na = curve_fit(gaussiana, x_values_22Na, y_values_22Na, p0=[max(y_values_22Na), max_x_22Na, 10])  
+print(popt_22Na)
+print(pcov_22Na)
+
+plt.figure(figsize=(12, 8))
+plt.plot(x_values_22Na, y_values_22Na, 'b+:', label='data')
+plt.plot(x_values_22Na, gaussiana(x_values_22Na, *popt_22Na), 'r-', label='fit')
+plt.legend()
+plt.title('Ajuste de gaussiana para 22Na')
+plt.xlabel('Canal')
+plt.ylabel('Cuentas')
+plt.savefig('P6_ajuste_22Na.png')
+plt.show()
+
+# Punto 1.2: Ajuste de gaussiana para 60Co
 
