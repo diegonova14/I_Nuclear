@@ -356,6 +356,4 @@ data = {'a': [popt_22Na_e[0], popt_22Na[0], popt_60Co_1[0], popt_60Co_2[0], popt
 df = pd.DataFrame(data, index=['22Na_1','22Na_2', '60Co_1', '60Co_2', '137Cs_1', '137Cs_2', '57Co'])
 print(df)
 
-
 # Punto 2: Calibración de energía
-
