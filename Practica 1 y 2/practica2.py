@@ -413,13 +413,53 @@ fwhm_canal = [fwhm_22Na_2, fwhm_22Na_1, fwhm_60Co_1, fwhm_60Co_2, fwhm_137Cs_1, 
 fwhm_calibrado = [b0 + b1 * fwhm_canal[i] for i in range(len(fwhm_canal))]
 
 # Crear el diccionario con los datos y crear el dataframe
-data = {'Canal (Experimental)': canal, 'E gamma propuesta (keV)': e_propuesta, 'E gamma (keV)': e_gamma, 'Delta E gamma': delta_e_gamma, '%': porcentaje, 'FWHM (keV)': fwhm_calibrado}
-df = pd.DataFrame(data)
+data_4 = {'Canal (Experimental)': canal, 'E gamma propuesta (keV)': e_propuesta, 'E gamma (keV)': e_gamma, 'Delta E gamma': delta_e_gamma, '%': porcentaje, 'FWHM (keV)': fwhm_calibrado}
+df = pd.DataFrame(data_4)
 
 # Mostrar el dataframe
 print(df)
 
+# punto 4: FWHM en funcion de la energia
 
+# Punto 4.a: Ajuste de la funcion de FWHM vs E
 
+def fwhm_ajuste(x, a, b):
+    return a + b*np.sqrt(x)
 
+x_values_feadj = np.array(df["E gamma (keV)"])
+y_values_feadj = np.array(df["FWHM (keV)"])
 
+# Get the sorted indices
+sorted_indices = np.argsort(x_values_feadj)
+
+# Use the sorted indices to sort the arrays
+x_values_feadjs = x_values_feadj[sorted_indices]
+y_values_feadjs = y_values_feadj[sorted_indices]
+
+popt, pcov = curve_fit(fwhm_ajuste, x_values_feadjs, y_values_feadjs, p0=[1, 1])
+c0 = popt[0]
+c1 = popt[1]
+
+print(f"Parametros ajuste: {popt[0]:.1f}, {popt[1]:.1f} (c_0,c_1)")
+
+# Calculo de los errores de c0 y c1
+delta_c0 = np.sqrt(pcov[0,0])
+delta_c1 = np.sqrt(pcov[1,1])
+
+print(f"Error de c0: {delta_c0:.1f}")
+print(f"Error de c1: {delta_c1:.1f}")
+
+# Tabla de resultados
+
+print("c0 (keV)\tc1 (sqrt(keV)")
+print(f"{c0:.1f} +/- {delta_c0:.1f}\t{c1:.1f} +/- {delta_c1:.1f}")
+
+plt.figure(figsize=(12, 8))
+plt.plot(x_values_feadjs, y_values_feadjs, 'b+', label='Datos')
+plt.plot(x_values_feadjs, fwhm_ajuste(x_values_feadjs, *popt), 'r-', label='Ajuste')
+plt.legend()
+plt.title('FWHM en función de la energía')
+plt.xlabel('Energía (keV)')
+plt.ylabel('FWHM (keV)')
+plt.savefig('A4_FWHM_vs_E.png')
+plt.show()
