@@ -188,7 +188,7 @@ def fwhm(x, y):
     # find the left and right most indexes
     left_idx = np.where(d > 0)[0][0]
     right_idx = np.where(d < 0)[0][0]
-    return x[right_idx] - x[left_idx]
+    return abs(x[right_idx] - x[left_idx])
 
 f_22Na_1 = gaussiana(x_values_22Na, *popt_22Na_e)
 f_22Na_2 = gaussiana(x_values_22Na, *popt_22Na)
@@ -385,6 +385,41 @@ delta_intercept = delta_slope * np.sqrt(np.mean(x**2))
 print("Resultados de los parametros de la recta de ajuste:")
 print(f"a0 (keV)\ta1(keV/canal)")
 print(f"{b0:.2f} +/- {delta_intercept:.2f}\t{b1:.2f} +/- {delta_slope:.2f}")
+
+# Grafica los datos y la recta de ajuste Es solo para visualizaciòn no se pide mostrar en el informe
+plt.figure(figsize=(12, 8))
+plt.plot(x, y, 'b+', label='Datos')
+plt.plot(x, b0 + b1 * x, 'r-', label='Ajuste')
+plt.legend()
+plt.title('Calibración de energía')
+plt.xlabel('Canal')
+plt.ylabel('Energía (keV)')
+plt.savefig('A2_calibracion.png')
+plt.show()
+
+# Punto 3: Verificación de la calibración
+
+# Crear una tabla con los valores de Canal, E gamma propuesta, E gamma, Delta E gamma, %, FWHM
+
+# Definir los valores de Canal y E gamma propuesta
+canal = [max_x_22Na_e, max_x_22Na, max_x_60Co_1, max_x_60Co_2, max_x_137Cs_1, max_x_137Cs_2, max_x_57Co_1]  
+e_propuesta = [p_electron, p_22Na_1, p_60Co_1, p_60Co_2, p_137Cs_alfa, p_137Cs_1, p_57Co_1]
+
+# Calcular los valores de E gamma, Delta E gamma, % y FWHM
+e_gamma = [b0 + b1 * c for c in canal]
+delta_e_gamma = [e_propuesta[i] - e_gamma[i] for i in range(len(canal))]
+porcentaje = [100 * delta_e_gamma[i] / e_gamma[i] for i in range(len(canal))]
+fwhm_canal = [fwhm_22Na_2, fwhm_22Na_1, fwhm_60Co_1, fwhm_60Co_2, fwhm_137Cs_1, fwhm_137Cs_2, fwhm_57Co_1]
+fwhm_calibrado = [b0 + b1 * fwhm_canal[i] for i in range(len(fwhm_canal))]
+
+# Crear el diccionario con los datos y crear el dataframe
+data = {'Canal (Experimental)': canal, 'E gamma propuesta (keV)': e_propuesta, 'E gamma (keV)': e_gamma, 'Delta E gamma': delta_e_gamma, '%': porcentaje, 'FWHM (keV)': fwhm_calibrado}
+df = pd.DataFrame(data)
+
+# Mostrar el dataframe
+print(df)
+
+
 
 
 
