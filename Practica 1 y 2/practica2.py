@@ -161,6 +161,7 @@ plt.show()
 # Punto 1.1: Ajuste de gaussiana para 22Na
 from scipy.optimize import curve_fit
 from numpy import trapz
+import pandas as pd
 
 def gaussiana(x, a, x0, sigma):
     return a*np.exp(-(x-x0)**2/(2*sigma**2))
@@ -344,6 +345,16 @@ plt.show()
 integral_f_57Co_1 = trapz(f_57Co_1, x_values_57Co)
 print(f"La intensidad para el primer pico de 57Co es: {integral_f_57Co_1}")
 
+# Crear una tabla para colocar los valores de los parámetros popt, fwhm e integral_f
+
+data = {'a': [popt_22Na_e[0], popt_22Na[0], popt_60Co_1[0], popt_60Co_2[0], popt_137Cs_1[0], popt_137Cs_2[0], popt_57Co_1[0]],
+    'mu': [popt_22Na_e[1], popt_22Na[1], popt_60Co_1[1], popt_60Co_2[1], popt_137Cs_1[1], popt_137Cs_2[1], popt_57Co_1[1]],
+    'sigma': [popt_22Na_e[2], popt_22Na[2], popt_60Co_1[2], popt_60Co_2[2], popt_137Cs_1[2], popt_137Cs_2[2], popt_57Co_1[2]],
+    'FWHM': [fwhm_22Na_2, fwhm_22Na_1, fwhm_60Co_1, fwhm_60Co_2, fwhm_137Cs_1, fwhm_137Cs_2, fwhm_57Co_1],
+    'I': [integral_f_22Na_2, integral_f_22Na_1, integral_f_60Co_1, integral_f_60Co_2, integral_f_137Cs_1, integral_f_137Cs_2, integral_f_57Co_1]}
+
+df = pd.DataFrame(data, index=['22Na_1','22Na_2' '60Co_1', '60Co_2', '137Cs_1', '137Cs_2', '57Co'])
+print(df)
 
 
 # Punto 2: Calibración de energía
