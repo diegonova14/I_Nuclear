@@ -162,6 +162,7 @@ plt.show()
 from scipy.optimize import curve_fit
 from numpy import trapz
 import pandas as pd
+from scipy.stats import linregress
 
 def gaussiana(x, a, x0, sigma):
     return a*np.exp(-(x-x0)**2/(2*sigma**2))
@@ -351,9 +352,27 @@ data = {'a': [popt_22Na_e[0], popt_22Na[0], popt_60Co_1[0], popt_60Co_2[0], popt
     'mu': [popt_22Na_e[1], popt_22Na[1], popt_60Co_1[1], popt_60Co_2[1], popt_137Cs_1[1], popt_137Cs_2[1], popt_57Co_1[1]],
     'sigma': [popt_22Na_e[2], popt_22Na[2], popt_60Co_1[2], popt_60Co_2[2], popt_137Cs_1[2], popt_137Cs_2[2], popt_57Co_1[2]],
     'FWHM': [fwhm_22Na_2, fwhm_22Na_1, fwhm_60Co_1, fwhm_60Co_2, fwhm_137Cs_1, fwhm_137Cs_2, fwhm_57Co_1],
-    'I': [integral_f_22Na_2, integral_f_22Na_1, integral_f_60Co_1, integral_f_60Co_2, integral_f_137Cs_1, integral_f_137Cs_2, integral_f_57Co_1]}
+    'I': [integral_f_22Na_2, integral_f_22Na_1, integral_f_60Co_1, integral_f_60Co_2, integral_f_137Cs_1, integral_f_137Cs_2, integral_f_57Co_1],
+    'E': [p_electron, p_22Na_1, p_60Co_1, p_60Co_2, p_137Cs_alfa, p_137Cs_1, p_57Co_1]}
 
 df = pd.DataFrame(data, index=['22Na_1','22Na_2', '60Co_1', '60Co_2', '137Cs_1', '137Cs_2', '57Co'])
 print(df)
 
 # Punto 2: Calibración de energía
+
+# Extraer las columnas "mu" y "E"
+x = df["mu"]
+y = df["E"]
+
+# Aplicar linregress para obtener los coeficientes de la recta de ajuste
+b1, b0, r_value, p_value, std_err = linregress(x, y)
+
+# Imprimir los coeficientes de la recta de ajuste
+print(f"b0 = {b0:.2f}")
+print(f"b1 = {b1:.2f}")
+
+# Calibrar los valores de los canales del eje x de los espectros
+x_calibrado = b0 + b1 * x_values_22Na # Utilizar x_calibrado en lugar de x_values en los gráficos y cálculos posteriores unidades en keV
+
+# Utilizar x_calibrado en lugar de x_values en los gráficos y cálculos posteriores
+
