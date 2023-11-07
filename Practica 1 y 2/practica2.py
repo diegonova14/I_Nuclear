@@ -463,3 +463,6 @@ plt.xlabel('Energía (keV)')
 plt.ylabel('FWHM (keV)')
 plt.savefig('A4_FWHM_vs_E.png')
 plt.show()
+
+# Punto 5: Ajuste de picos de 57Co
+
