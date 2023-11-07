@@ -41,7 +41,7 @@ plt.xlabel('Canal')
 plt.ylabel('Cuentas')
 plt.legend()
 plt.savefig('P1_espectros.png')
-plt.show()
+#plt.show()
 
 # Punto 2: Resta del fondo
 y_values_22Na = [a - b for a, b in zip(y_values_22Na, y_values_fondo)]
@@ -58,7 +58,7 @@ plt.xlabel('Canal')
 plt.ylabel('Cuentas')
 plt.legend()
 plt.savefig('P3_57Co.png')
-plt.show()
+#plt.show()
 
 # Punto 4: Espectro 22Na a 600s "Limpiado"
 
@@ -69,7 +69,7 @@ plt.xlabel('Canal')
 plt.ylabel('Cuentas')
 plt.legend()
 plt.savefig('P4_137Cs.png')
-plt.show()
+#plt.show()
 
 plt.figure(figsize=(12, 8))
 plt.plot(x_values_22Na,y_values_22Na, label='22Na 600 s')
@@ -82,7 +82,7 @@ plt.xlabel('Canal')
 plt.ylabel('Cuentas')
 plt.legend()
 plt.savefig('P4_Espectros.png')
-plt.show()
+##plt.show()
 
 # Punto 5: Calibración de picos
 
@@ -207,7 +207,7 @@ plt.xlim([popt_22Na_e[1]-4*popt_22Na_e[2], popt_22Na_e[1]+4*popt_22Na_e[2]])
 plt.xlabel('Canal')
 plt.ylabel('Cuentas')
 plt.savefig('A1_ajuste_22Na_1.png')
-plt.show()
+#plt.show()
 
 plt.figure(figsize=(12, 8))
 plt.plot(x_values_22Na, y_values_22Na, 'b+:', label='Datos')
@@ -218,7 +218,7 @@ plt.xlim([popt_22Na[1]-4*popt_22Na[2], popt_22Na[1]+4*popt_22Na[2]])
 plt.xlabel('Canal')
 plt.ylabel('Cuentas')
 plt.savefig('A1_ajuste_22Na_2.png')
-plt.show()
+#plt.show()
 
 
 integral_f_22Na_1 = trapz(f_22Na_1, x_values_22Na)
@@ -259,7 +259,7 @@ plt.xlim([popt_60Co_1[1]-4*popt_60Co_1[2], popt_60Co_2[1]+4*popt_60Co_2[2]])
 plt.xlabel('Canal')
 plt.ylabel('Cuentas')
 plt.savefig('A1_ajuste_60Co.png')
-plt.show()
+#plt.show()
 
 integral_f_60Co_1 = trapz(f_60Co_1, x_values_60Co)
 print(f"La intensidad para el primer pico de 60Co es: {integral_f_60Co_1}")
@@ -299,7 +299,7 @@ plt.xlim([popt_137Cs_1[1]-4*popt_137Cs_1[2], popt_137Cs_1[1]+4*popt_137Cs_1[2]])
 plt.xlabel('Canal')
 plt.ylabel('Cuentas')
 plt.savefig('A1_ajuste_137Cs_1.png')
-plt.show()
+#plt.show()
 
 plt.figure(figsize=(12, 8))
 plt.plot(x_values_137Cs, y_values_137Cs, 'b+:', label='Datos')
@@ -310,7 +310,7 @@ plt.xlim([popt_137Cs_2[1]-4*popt_137Cs_2[2], popt_137Cs_2[1]+4*popt_137Cs_2[2]])
 plt.xlabel('Canal')
 plt.ylabel('Cuentas')
 plt.savefig('A1_ajuste_137Cs_2.png')
-plt.show()
+#plt.show()
 
 integral_f_137Cs_1 = trapz(f_137Cs_1, x_values_137Cs)
 print(f"La intensidad para el primer pico de 137Cs es: {integral_f_137Cs_1}")
@@ -341,7 +341,7 @@ plt.xlim([popt_57Co_1[1]-4*popt_57Co_1[2], popt_57Co_1[1]+4*popt_57Co_1[2]])
 plt.xlabel('Canal')
 plt.ylabel('Cuentas')
 plt.savefig('A1_ajuste_57Co_1.png')
-plt.show()
+#plt.show()
 
 integral_f_57Co_1 = trapz(f_57Co_1, x_values_57Co)
 print(f"La intensidad para el primer pico de 57Co es: {integral_f_57Co_1}")
@@ -374,5 +374,17 @@ print(f"b1 = {b1:.2f}")
 # Calibrar los valores de los canales del eje x de los espectros
 x_calibrado = b0 + b1 * x_values_22Na # Utilizar x_calibrado en lugar de x_values en los gráficos y cálculos posteriores unidades en keV
 
+print(f"El error relativo de la calibración es: {std_err/b1:.2f}")
 # Utilizar x_calibrado en lugar de x_values en los gráficos y cálculos posteriores
+
+# Calcula las incertidumbres de los parámetros de la recta de ajuste
+delta_slope = std_err / np.sqrt(len(x))
+delta_intercept = delta_slope * np.sqrt(np.mean(x**2))
+
+# Muestra los valores de las incertidumbres
+print("Resultados de los parametros de la recta de ajuste:")
+print(f"a0 (keV)\ta1(keV/canal)")
+print(f"{b0:.2f} +/- {delta_intercept:.2f}\t{b1:.2f} +/- {delta_slope:.2f}")
+
+
 
